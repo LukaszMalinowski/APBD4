@@ -1,4 +1,6 @@
-﻿using cwiczenia4_zen_s19743.Repositories;
+﻿using cwiczenia4_zen_s19743.Exceptions;
+using cwiczenia4_zen_s19743.Models.DTOs;
+using cwiczenia4_zen_s19743.Repositories;
 
 namespace cwiczenia4_zen_s19743.Services
 {
@@ -11,9 +13,20 @@ namespace cwiczenia4_zen_s19743.Services
             _repository = repository;
         }
 
-        public int RegisterProductAtWarehouse()
+        public int RegisterProductAtWarehouse(WarehouseDTO warehouseDto)
         {
-            throw new System.NotImplementedException();
+            if(!_repository.ProductExists(warehouseDto.IdProduct))
+            {
+                throw new ProductDoesntExistException(warehouseDto.IdProduct);
+            }
+            
+            if(!_repository.WarehouseExists(warehouseDto.IdWarehouse))
+            {
+                throw new WarehouseDoesntExistException(warehouseDto.IdWarehouse);
+            }
+
+
+            return 0;
         }
     }
 }

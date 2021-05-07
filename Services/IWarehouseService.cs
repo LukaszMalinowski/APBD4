@@ -1,7 +1,9 @@
-﻿namespace cwiczenia4_zen_s19743.Services
+﻿using cwiczenia4_zen_s19743.Models.DTOs;
+
+namespace cwiczenia4_zen_s19743.Services
 {
     public interface IWarehouseService
     {
-        public int RegisterProductAtWarehouse();
+        public int RegisterProductAtWarehouse(WarehouseDTO warehouseDto);
     }
 }
