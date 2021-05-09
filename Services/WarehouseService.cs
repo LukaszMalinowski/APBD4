@@ -1,4 +1,5 @@
-﻿using cwiczenia4_zen_s19743.Exceptions;
+﻿using System;
+using cwiczenia4_zen_s19743.Exceptions;
 using cwiczenia4_zen_s19743.Models.DTOs;
 using cwiczenia4_zen_s19743.Repositories;
 
@@ -15,18 +16,29 @@ namespace cwiczenia4_zen_s19743.Services
 
         public int RegisterProductAtWarehouse(WarehouseDTO warehouseDto)
         {
-            if(!_repository.ProductExists(warehouseDto.IdProduct))
+            ValidateProduct(warehouseDto);
+
+            var orderId = _repository.GetOrderId(warehouseDto.IdProduct, warehouseDto.Amount, warehouseDto.CreatedAt);
+
+            if (_repository.IsOrderCompleted(orderId))
+            {
+                throw new OrderAlreadyCompletedException(orderId);
+            }
+
+            return _repository.RegisterProductAtWarehouse(warehouseDto);
+        }
+
+        private void ValidateProduct(WarehouseDTO warehouseDto)
+        {
+            if (!_repository.ProductExists(warehouseDto.IdProduct))
             {
                 throw new ProductDoesntExistException(warehouseDto.IdProduct);
             }
-            
-            if(!_repository.WarehouseExists(warehouseDto.IdWarehouse))
+
+            if (!_repository.WarehouseExists(warehouseDto.IdWarehouse))
             {
                 throw new WarehouseDoesntExistException(warehouseDto.IdWarehouse);
             }
-
-
-            return 0;
         }
     }
 }
