@@ -1,4 +1,5 @@
 ﻿using System;
+using cwiczenia4_zen_s19743.Exceptions;
 using cwiczenia4_zen_s19743.Models.DTOs;
 using cwiczenia4_zen_s19743.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ namespace cwiczenia4_zen_s19743.Controllers
             {
                key = _service.RegisterProductAtWarehouse(warehouseDto);
             }
-            catch (Exception e)
+            catch (BaseException e)
             {
                 return NotFound(e.Message);
             }
