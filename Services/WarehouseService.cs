@@ -25,7 +25,7 @@ namespace cwiczenia4_zen_s19743.Services
                 throw new OrderAlreadyCompletedException(orderId);
             }
 
-            return _repository.RegisterProductAtWarehouse(warehouseDto);
+            return _repository.RegisterProductAtWarehouse(warehouseDto, orderId);
         }
 
         private void ValidateProduct(WarehouseDTO warehouseDto)

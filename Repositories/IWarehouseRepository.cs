@@ -5,8 +5,6 @@ namespace cwiczenia4_zen_s19743.Repositories
 {
     public interface IWarehouseRepository
     {
-        public int RegisterProductAtWarehouse(WarehouseDTO warehouseDto);
-
         public bool ProductExists(int? idProduct);
 
         public bool WarehouseExists(int? idWarehouse);
@@ -14,5 +12,7 @@ namespace cwiczenia4_zen_s19743.Repositories
         public int GetOrderId(int? idProduct, int? amount, DateTime? createdAt);
 
         public bool IsOrderCompleted(int idOrder);
+        
+        public int RegisterProductAtWarehouse(WarehouseDTO warehouseDto, int orderId);
     }
 }

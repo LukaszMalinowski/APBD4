@@ -20,17 +20,18 @@ namespace cwiczenia4_zen_s19743.Controllers
         [HttpPost]
         public IActionResult RegisterProductAtWarehouse([FromBody] WarehouseDTO warehouseDto)
         {
-            int key = 0;
+            int id;
+            
             try
             {
-               key = _service.RegisterProductAtWarehouse(warehouseDto);
+               id = _service.RegisterProductAtWarehouse(warehouseDto);
             }
             catch (BaseException e)
             {
                 return NotFound(e.Message);
             }
 
-            return Ok();
+            return Ok(id);
         }
     }
 }
