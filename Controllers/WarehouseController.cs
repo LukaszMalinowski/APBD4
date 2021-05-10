@@ -1,5 +1,4 @@
-﻿using System;
-using cwiczenia4_zen_s19743.Exceptions;
+﻿using cwiczenia4_zen_s19743.Exceptions;
 using cwiczenia4_zen_s19743.Models.DTOs;
 using cwiczenia4_zen_s19743.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -12,19 +11,19 @@ namespace cwiczenia4_zen_s19743.Controllers
     {
         private readonly IWarehouseService _service;
 
-        public WarehouseController(IWarehouseService service)
+        public WarehouseController(Startup.ServiceResolver resolver)
         {
-            _service = service;
+            _service = resolver("repo");
         }
 
         [HttpPost]
         public IActionResult RegisterProductAtWarehouse([FromBody] WarehouseDTO warehouseDto)
         {
             int id;
-            
+
             try
             {
-               id = _service.RegisterProductAtWarehouse(warehouseDto);
+                id = _service.RegisterProductAtWarehouse(warehouseDto);
             }
             catch (BaseException e)
             {

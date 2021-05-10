@@ -1,23 +1,19 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using cwiczenia4_zen_s19743.Repositories;
 using cwiczenia4_zen_s19743.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace cwiczenia4_zen_s19743
 {
     public class Startup
     {
+        public delegate IWarehouseService ServiceResolver(string key);
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -28,9 +24,24 @@ namespace cwiczenia4_zen_s19743
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IWarehouseService, WarehouseService>();
+            services.AddTransient<WarehouseService>();
+            services.AddTransient<WarehouseProcService>();
+
+            services.AddTransient<ServiceResolver>(serviceProvider => key =>
+            {
+                switch (key)
+                {
+                    case "repo":
+                        return serviceProvider.GetService<WarehouseService>();
+                    case "proc":
+                        return serviceProvider.GetService<WarehouseProcService>();
+                    default:
+                        throw new KeyNotFoundException();
+                }
+            });
+
             services.AddScoped<IWarehouseRepository, WarehouseRepository>();
-            
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

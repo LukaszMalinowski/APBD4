@@ -1,8 +1,8 @@
 ﻿using System;
-using cwiczenia4_zen_s19743.Models.DTOs;
 using System.Data.SqlClient;
 using cwiczenia4_zen_s19743.Exceptions;
 using cwiczenia4_zen_s19743.Models;
+using cwiczenia4_zen_s19743.Models.DTOs;
 using Microsoft.Extensions.Configuration;
 
 namespace cwiczenia4_zen_s19743.Repositories
@@ -18,8 +18,8 @@ namespace cwiczenia4_zen_s19743.Repositories
 
         public bool ProductExists(int? idProduct)
         {
-            using SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("PjatkDb"));
-            SqlCommand command = new SqlCommand
+            using var connection = new SqlConnection(_configuration.GetConnectionString("PjatkDb"));
+            var command = new SqlCommand
             {
                 Connection = connection,
                 CommandText = "SELECT COUNT(*) FROM Product WHERE IdProduct = @IdProduct"
@@ -29,7 +29,7 @@ namespace cwiczenia4_zen_s19743.Repositories
 
             connection.Open();
 
-            int productCount = (int) command.ExecuteScalar();
+            var productCount = (int) command.ExecuteScalar();
 
             connection.Close();
 
@@ -38,8 +38,8 @@ namespace cwiczenia4_zen_s19743.Repositories
 
         public bool WarehouseExists(int? idWarehouse)
         {
-            using SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("PjatkDb"));
-            SqlCommand command = new SqlCommand
+            using var connection = new SqlConnection(_configuration.GetConnectionString("PjatkDb"));
+            var command = new SqlCommand
             {
                 Connection = connection,
                 CommandText = "SELECT COUNT(*) FROM Warehouse WHERE IdWarehouse = @IdWarehouse"
@@ -49,7 +49,7 @@ namespace cwiczenia4_zen_s19743.Repositories
 
             connection.Open();
 
-            int warehouseCount = (int) command.ExecuteScalar();
+            var warehouseCount = (int) command.ExecuteScalar();
 
             connection.Close();
 
@@ -58,8 +58,8 @@ namespace cwiczenia4_zen_s19743.Repositories
 
         public int GetOrderId(int? idProduct, int? amount, DateTime? createdAt)
         {
-            using SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("PjatkDb"));
-            SqlCommand command = new SqlCommand
+            using var connection = new SqlConnection(_configuration.GetConnectionString("PjatkDb"));
+            var command = new SqlCommand
             {
                 Connection = connection,
                 CommandText = "SELECT * FROM [Order] WHERE IdProduct = @IdProduct AND Amount = @Amount"
@@ -69,12 +69,11 @@ namespace cwiczenia4_zen_s19743.Repositories
             command.Parameters.AddWithValue("@Amount", amount);
 
             connection.Open();
-            SqlDataReader dataReader = command.ExecuteReader();
+            var dataReader = command.ExecuteReader();
 
             Order order = null;
 
             while (dataReader.Read())
-            {
                 order = new Order
                 {
                     IdOrder = Convert.ToInt32(dataReader["IdOrder"].ToString()),
@@ -83,7 +82,6 @@ namespace cwiczenia4_zen_s19743.Repositories
                     FulfilledAt = FulfilledAtOrNull(dataReader["FulfilledAt"]),
                     IdProduct = Convert.ToInt32(dataReader["IdProduct"].ToString())
                 };
-            }
 
             connection.Close();
 
@@ -98,8 +96,8 @@ namespace cwiczenia4_zen_s19743.Repositories
 
         public bool IsOrderCompleted(int idOrder)
         {
-            using SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("PjatkDb"));
-            SqlCommand command = new SqlCommand
+            using var connection = new SqlConnection(_configuration.GetConnectionString("PjatkDb"));
+            var command = new SqlCommand
             {
                 Connection = connection,
                 CommandText = "SELECT COUNT(*) FROM Product_Warehouse WHERE IdOrder = @IdOrder"
@@ -109,7 +107,7 @@ namespace cwiczenia4_zen_s19743.Repositories
 
             connection.Open();
 
-            int orderCount = (int) command.ExecuteScalar();
+            var orderCount = (int) command.ExecuteScalar();
 
             connection.Close();
 
@@ -120,10 +118,10 @@ namespace cwiczenia4_zen_s19743.Repositories
         {
             UpdateFulfilledAtInOrderTable(orderId);
 
-            decimal productPrice = GetProductPrice(warehouseDto.IdProduct);
+            var productPrice = GetProductPrice(warehouseDto.IdProduct);
 
-            using SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("PjatkDb"));
-            SqlCommand command = new SqlCommand
+            using var connection = new SqlConnection(_configuration.GetConnectionString("PjatkDb"));
+            var command = new SqlCommand
             {
                 Connection = connection,
                 CommandText = "SELECT MAX(IdProductWarehouse) AS maxId FROM Product_Warehouse"
@@ -131,11 +129,11 @@ namespace cwiczenia4_zen_s19743.Repositories
 
             connection.Open();
 
-            SqlDataReader sqlDataReader = command.ExecuteReader();
+            var sqlDataReader = command.ExecuteReader();
 
             sqlDataReader.Read();
 
-            int maxId = 0;
+            var maxId = 0;
 
             if (!sqlDataReader["maxId"].ToString().Equals(""))
                 maxId = Convert.ToInt32(sqlDataReader["maxId"].ToString());
@@ -153,7 +151,7 @@ namespace cwiczenia4_zen_s19743.Repositories
             command.Parameters.AddWithValue("@Amount", warehouseDto.Amount);
             command.Parameters.AddWithValue("@Price", productPrice * warehouseDto.Amount);
             command.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
-            
+
             command.ExecuteNonQuery();
 
             return maxId + 1;
@@ -161,8 +159,8 @@ namespace cwiczenia4_zen_s19743.Repositories
 
         private decimal GetProductPrice(int? idProduct)
         {
-            using SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("PjatkDb"));
-            SqlCommand command = new SqlCommand
+            using var connection = new SqlConnection(_configuration.GetConnectionString("PjatkDb"));
+            var command = new SqlCommand
             {
                 Connection = connection,
                 CommandText = "SELECT Price FROM Product WHERE IdProduct = @IdProduct"
@@ -177,8 +175,8 @@ namespace cwiczenia4_zen_s19743.Repositories
 
         private void UpdateFulfilledAtInOrderTable(int orderId)
         {
-            using SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("PjatkDb"));
-            SqlCommand command = new SqlCommand
+            using var connection = new SqlConnection(_configuration.GetConnectionString("PjatkDb"));
+            var command = new SqlCommand
             {
                 Connection = connection,
                 CommandText = "UPDATE [Order] SET FulfilledAt = @CurrentDate WHERE IdOrder = @IdOrder"
