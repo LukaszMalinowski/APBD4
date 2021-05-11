@@ -1,4 +1,5 @@
-﻿using cwiczenia4_zen_s19743.Models.DTOs;
+﻿using System.Data.SqlClient;
+using cwiczenia4_zen_s19743.Models.DTOs;
 using cwiczenia4_zen_s19743.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,14 @@ namespace cwiczenia4_zen_s19743.Controllers
         [HttpPost]
         public IActionResult RegisterProductAtWarehouse([FromBody] WarehouseDTO warehouseDto)
         {
-            _service.RegisterProductAtWarehouse(warehouseDto);
+            try
+            {
+                _service.RegisterProductAtWarehouse(warehouseDto);
+            }
+            catch (SqlException e)
+            {
+                return BadRequest(e.Message);
+            }
 
             return Ok(0);
         }
