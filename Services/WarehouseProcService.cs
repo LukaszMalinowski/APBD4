@@ -21,10 +21,9 @@ namespace cwiczenia4_zen_s19743.Services
             var command = new SqlCommand
             {
                 Connection = connection,
-                CommandText = "AddProductToWarehouse"
+                CommandText = "AddProductToWarehouse",
+                CommandType = CommandType.StoredProcedure
             };
-
-            command.CommandType = CommandType.StoredProcedure;
 
             command.Parameters.AddWithValue("@IdProduct", warehouseDto.IdProduct);
             command.Parameters.AddWithValue("@IdWarehouse", warehouseDto.IdWarehouse);
@@ -35,9 +34,19 @@ namespace cwiczenia4_zen_s19743.Services
 
             command.ExecuteNonQuery();
 
+            command.CommandText = "SELECT MAX(IdProductWarehouse) AS maxId FROM Product_Warehouse";
+
+            command.CommandType = CommandType.Text;
+            
+            var sqlDataReader = command.ExecuteReader();
+
+            sqlDataReader.Read();
+            
+            int addedId = Convert.ToInt32(sqlDataReader["maxId"].ToString());
+
             connection.Close();
 
-            return 0;
+            return addedId;
         }
     }
 }
